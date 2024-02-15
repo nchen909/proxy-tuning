@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Any
 import torch
-from transformers import LlamaForCausalLM, LlamaTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch.nn.functional as F
 from transformers.generation.utils import (
     ModelOutput,
@@ -13,20 +13,20 @@ DEFAULT_SYSTEM_PROMPT = "You are a helpful, respectful and honest assistant."
 B_SYS, E_SYS = "<<SYS>>\n", "\n<</SYS>>\n\n"
 
 
-class DExpertsLlama:
+class DExpertsQwen:
     def __init__(
         self,
         base_model_name_or_path: str,
         expert_model_name_or_path: str,
         antiexpert_model_name_or_path: str,
-        tokenizer: LlamaTokenizer,
+        tokenizer: AutoTokenizer,
         system_prompt: str = None,
         alpha: float = 1.0,
         chat_response_prefix: str = None,
         model_kwargs: Dict[str, Any] = None
     ):
         """
-        chat_response_prefix: For llama chat models, it can be helpful for the response
+        chat_response_prefix: For chat models, it can be helpful for the response
         to start with a certain prefix to constrain the generation to directly answer
         the question. This makes evaluation on MC datasets easier.
         """
@@ -34,14 +34,14 @@ class DExpertsLlama:
         # NOTE: Our implementation calls each model in sequence, but these calls can 
         # potentially be parallelized for faster generation (e.g., putting models on 
         # different GPUs and collecting logits with GPU communication like NCCL operations)
-        self.base = LlamaForCausalLM.from_pretrained(
-            base_model_name_or_path, **model_kwargs
+        self.base = AutoModelForCausalLM.from_pretrained(
+            base_model_name_or_path,trust_remote_code=True, **model_kwargs
         )
-        self.expert = LlamaForCausalLM.from_pretrained(
-            expert_model_name_or_path, **model_kwargs
+        self.expert = AutoModelForCausalLM.from_pretrained(
+            expert_model_name_or_path,trust_remote_code=True, **model_kwargs
         )
-        self.antiexpert = LlamaForCausalLM.from_pretrained(
-            antiexpert_model_name_or_path, **model_kwargs
+        self.antiexpert = AutoModelForCausalLM.from_pretrained(
+            antiexpert_model_name_or_path,trust_remote_code=True, **model_kwargs
         )
 
         self.base.eval()
@@ -53,7 +53,7 @@ class DExpertsLlama:
         self.device = self.base.device
         self.chat_response_prefix = chat_response_prefix
 
-        # Llama chat experts need different formatting
+        # Chat experts need different formatting
         self.use_chat_format_for_expert = True if 'chat' in expert_model_name_or_path.lower() else False
 
         if self.use_chat_format_for_expert:

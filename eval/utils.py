@@ -1,5 +1,6 @@
 import torch
 import tqdm
+import json
 import os
 from importlib import import_module
 from transformers import (
@@ -53,12 +54,13 @@ def generate_completions(
     generations = []
     if not disable_tqdm:
         progress = tqdm.tqdm(total=len(prompts), desc="Generating Completions")
-
+    
     num_return_sequences = generation_kwargs.get("num_return_sequences", 1)
+    fp = open("/mntcephfs/lab_data/chennuo/proxy-tuning/outputs/outputs.jsonl",'w')
     for i in range(0, len(prompts), batch_size):
         batch_prompts = prompts[i:i+batch_size]
         tokenized_prompts = tokenizer(
-            batch_prompts, padding="longest", return_tensors="pt", add_special_tokens=add_special_tokens
+            batch_prompts, padding="longest", return_tensors="pt", add_special_tokens=add_special_tokens, pad_token='<|extra_0|>', eos_token='<|endoftext|>'
         )
         batch_input_ids = tokenized_prompts.input_ids
         attention_mask = tokenized_prompts.attention_mask
@@ -117,7 +119,12 @@ def generate_completions(
         batch_generations = [
             output[len(prompt):] for prompt, output in zip(batch_prompts, batch_outputs)
         ]
-
+        
+        for generation, prompt in zip(batch_generations, batch_prompts):
+            list_tmp = {'question':prompt, 'model_answer': generation}
+            print("####list_tmp:",list_tmp)
+            fp.write(json.dumps(list_tmp, ensure_ascii=False)+'\n')
+            
         generations += batch_generations
 
         if not disable_tqdm:
@@ -235,7 +242,7 @@ def load_hf_lm_and_tokenizer(
         'offload_state_dict': True,
         'load_in_8bit': load_in_8bit
     }
-    model = AutoModelForCausalLM.from_pretrained(model_name_or_path, **model_kwargs)
+    model = AutoModelForCausalLM.from_pretrained(model_name_or_path, **model_kwargs,trust_remote_code=True)
     if convert_to_half:
         model = model.half()
     model.eval()
@@ -243,7 +250,7 @@ def load_hf_lm_and_tokenizer(
     if not tokenizer_name_or_path:
         tokenizer_name_or_path = model_name_or_path
 
-    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path, use_fast=use_fast_tokenizer)
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path, use_fast=use_fast_tokenizer,trust_remote_code=True)
 
     # set padding side to left for batch generation
     tokenizer.padding_side = padding_side
@@ -274,13 +281,13 @@ def load_dexperts_model_and_tokenizer(
     tokenizer_name_or_path: str = None,
     padding_side: str = "left",
 ):
-    from modeling.dexperts import DExpertsLlama
+    from modeling.dexperts import DExpertsQwen
     from transformers import AutoTokenizer
 
     if not tokenizer_name_or_path:
         tokenizer_name_or_path = base_model_name_or_path
 
-    tokenizer = AutoTokenizer.from_pretrained(base_model_name_or_path, use_fast_tokenizer=use_fast_tokenizer)
+    tokenizer = AutoTokenizer.from_pretrained(base_model_name_or_path, use_fast_tokenizer=use_fast_tokenizer, trust_remote_code=True, pad_token='<|extra_0|>', eos_token='<|endoftext|>')
 
     # set padding side to left for batch generation
     tokenizer.padding_side = padding_side
@@ -298,10 +305,10 @@ def load_dexperts_model_and_tokenizer(
         'load_in_8bit': load_in_8bit,
     }
 
-    model = DExpertsLlama(
+    model = DExpertsQwen(
         base_model_name_or_path=base_model_name_or_path,
         expert_model_name_or_path=expert_model_name_or_path,
-        antiexpert_model_name_or_path='meta-llama/Llama-2-7b-hf',
+        antiexpert_model_name_or_path='/mntcephfs/data/med/chenghao/models/Qwen-1_8B',
         tokenizer=tokenizer,
         system_prompt=system_prompt,
         alpha=alpha,

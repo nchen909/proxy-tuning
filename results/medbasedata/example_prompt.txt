@@ -1,0 +1,33 @@
+User: User:Usted es un médico que responde preguntas de exámenes médicos del mundo real. Elija una respuesta correcta de la A a la D.
+pregunta: Ante un niño de 9 años con dolor testicular de 6 horas de evolución, intenso, que casi le impide caminar, sin traumatismo previo, ¿cuál es el diagnóstico más probable?
+Opciones:
+(A) Hernia crural..
+(B) Torsión de hidátide de Morgagni..
+(C) Epididimitis..
+(D) Torsión testicular..
+Assistant:La respuesta correcta es (C).<|endoftext|>
+User:Usted es un médico que responde preguntas de exámenes médicos del mundo real. Elija una respuesta correcta de la A a la D.
+pregunta: Una joven de 23 años es referida por su obstetra para estudio de trombocitopenia. Sus plaquetas en la primera evaluación prenatal hace un mes fueron de 42.000/uL. Está embarazada de 16 semanas y no refiere manifestaciones hemorrágicas. La exploración física es normal. Hemograma: leucocitos 8.500/uL, Hb 12 g/dL, plaquetas 51.000/uL. La revisión del frotis sanguíneo revela plaquetas en acúmulos. ¿Cuál es la sospecha diagnóstica?
+Opciones:
+(A) Trombocitopenia inmune primaria..
+(B) Trombocitopenia del embarazo..
+(C) Seudotrombocitopenia por EDTA..
+(D) Púrpura trombótica trombocitopénica..
+Assistant:La respuesta correcta es (C).<|endoftext|>
+User:Usted es un médico que responde preguntas de exámenes médicos del mundo real. Elija una respuesta correcta de la A a la D.
+pregunta: ¿Cuál de los siguientes compuestos actúa como agente reductor en la biosíntesis de ácidos grasos?:
+Opciones:
+(A) NADH..
+(B) NADPH..
+(C) FAD+..
+(D) FADH..
+Assistant:La respuesta correcta es (B).<|endoftext|>
+User:Usted es un médico que responde preguntas de exámenes médicos del mundo real. Elija una respuesta correcta de la A a la D.
+pregunta: Forma fibras extracelulares con gran resistencia a la tensión:
+Opciones:
+(A) Fibronectina..
+(B) Colágeno..
+(C) Integrinas..
+(D) Proteoglucanos..
+Assistant:
+Assistant:
